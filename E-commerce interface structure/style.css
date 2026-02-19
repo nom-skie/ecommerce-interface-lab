@@ -1,0 +1,173 @@
+:root{
+
+    --primary-color: #F95738;
+    --primary-dark: #082846;
+    --secondary-dark:  #124574;
+    --bg-color: #FFF2C4;
+    --white: #FFFFFF;
+    --highlight-color: #F4D35E;
+
+
+}
+body{
+    margin: 20px;
+    font-family: sans-serif;
+    background-color: var(--bg-color);
+    color: var(--primary-dark);
+    font-size: 15px;
+}
+
+/* Headings */
+h2{
+    font-family: serif;
+    font-size: larger;
+    font-weight: bolder;
+
+}
+h1{
+    font-family: serif;
+    font-weight: bolder;
+}   
+h3{
+    font-family: serif;
+    font-size: larger;
+    font-weight: lighter;
+}
+h4{
+    font-family: serif;
+    font-size: medium;
+    font-weight: bold;
+}
+
+
+form{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+/* list */
+ul{
+    list-style: none;
+}
+nav ul li{
+    display: inline-block;
+    margin-right: 20px;
+    color: var(--secondary-dark);
+}
+
+
+
+/* Button and links */
+a{
+    text-decoration: none;
+    color: var(--secondary-dark);
+}
+
+button{
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-weight: bold;
+}
+a, button{
+    transition: background-color 0.3s ease;
+    
+}
+button:hover{
+    color: var(--white);
+    transform: scale(1.05);
+}
+a:hover{
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+button:active{
+    transform: scale(0.9);
+    background-color: var(--secondary-dark);
+}
+button:focus{
+    outline: solid 1px var(--primary-dark);
+}
+
+
+/* checkbox and radio */
+input[type="checkbox"], input[type="radio"]{
+    transform: scale(1.5);
+    margin-right: 10px;
+}
+
+/* Images */
+img{
+    border-radius: 10px;
+}
+
+/* Products */
+article:nth-child(even){
+    background-color: var(--highlight-color); 
+}
+
+article p{
+    color: var(--primary-color);
+}
+
+article{
+    display: inline-block;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: var(--white);
+    width: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    transition: transform 0.05s ease;
+}
+article:hover{
+    transform: scale(1.05);
+}
+
+
+/* empty cart */
+div:empty{
+    outline: 2px dashed var(--primary-color);
+    height: max-content;
+}
+
+
+.price::before{
+    content: "₱";
+}
+
+/* Input */
+
+input:required{
+    font-size: medium;
+    padding: 8px;
+    border-radius: 5px;
+    border: 2px solid #F95738;
+}
+
+input:valid{
+    border: 2px solid #80C4E9;
+}
+
+/* Table */
+td:first-child{
+    font-weight: bold
+
+}
+
+::marker{
+    color: var(--primary-color);
+}
+
+/* reviews */
+
+blockquote p::before{
+    content: "“";
+}
+
+blockquote p::after{
+    content: "”";
+}
