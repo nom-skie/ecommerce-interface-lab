@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Checkout</h1>
+    <section class="checkout">
+        
+        <fieldset id="fieldset">
+            <label for="fieldset">Shipping Address</label><br><br>
+            <label for="name">Name: </label>
+            <input type="text" id="name" required>
+            <br><br>
+            <label for="street">Street: </label>
+            <input type="text" id="street" required>
+            <br><br>
+            <label for="zip-code">zip code</label>
+            <input type="text" id="zip-code" required>
+        </fieldset>
+        <form>
+            <label for="payment">Payment Method: </label>
+            <input type="radio" name="choice" id="payment"> Credit Card
+            <input type="radio" name="choice" id="payment"> PayPal
+        </form>
+        <aside>
+            <h3>Order Summary</h3>
+            <table cellspacing="10px">
+                <tr>
+                    <td>Air Max 270 React</td>
+                    <td>1x</td>
+                    <td>₱10,295.00</td>
+                </tr>
+                <tr>
+                    <td>Apple AirPods Pro</td>
+                    <td>1x</td>
+                    <td>₱12,490.00</td>
+                </tr>
+                <tr>
+                    <td>adidas Running Own the Run Jacket Men Black</td>
+                    <td>1x</td>
+                    <td>₱4,000.00</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Subtotal</td>
+                    <td>₱26,785.00</td>
+                </tr>
+            </table>
+            <br>
+            <button>Place Order</button>
+        </aside>
+    </section>
+
+    
+    
+</body>
+</html>
