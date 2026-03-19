@@ -1,15 +1,19 @@
-function generateIDs(count){
-    let id=[];
+//PROBLEM 4
 
-    for(let i = 0; i < count; i++){
-        if(count === 7){
-            if(i === 5){
-                continue;
-            }
-        }
-        id.push(`ID-${i}`);
-    }
-    return id;
+let playerList = [ {name: "Alice", score: 7},
+                {name: "Bob", score: 5}, 
+                {name: "Francis", score: 9}, 
+                {name: "JP", score: 9},
+                {name: "Jayson", score: 10},
+                {name: "Mila Jane", score: 10},
+                {name: "Richard", score: 4},
+                {name: "Anna", score: 4},
+                {name: "Mike", score: 2}, 
+                {name: "Ruby", score: 10}, ]
+
+function getTopScores(playerList){
+    let leaderboard = playerList.filter(player => player.score > 8). map(player => player.name).join(", ");
+
+    return leaderboard;
 }
-
-console.log(generateIDs(7))
+console.log(`Top Scorers: ${getTopScores(playerList)}`)
