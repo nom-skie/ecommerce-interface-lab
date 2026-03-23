@@ -29,15 +29,13 @@ console.log(checkVariable(null));
 function generateIDs(count){
     let id=[];
 
-    for(let i = 0; i < count; i++){
-        if(count === 7){
-            if(i === 5){
-                continue;
-            }
-        }
-        id.push(`ID-${i}`);
-    }
-    return id;
+//PROBLEM_3
+function calculateTotal(...numbers){
+    let sum = numbers.reduce((total, current) => total + current, 0)
+
+    return sum;
 }
 
-console.log(generateIDs(7))
+console.log(calculateTotal(1,2,3,4,5,6,7,8,9));
+
+
