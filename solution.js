@@ -14,4 +14,4 @@ function generateIDs(count){
     return id;
 }
 
-console.log(generateIDs(7))
+console.log(generateIDs(7));
