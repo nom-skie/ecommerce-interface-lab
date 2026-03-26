@@ -24,10 +24,6 @@ console.log(checkVariable(123456789012345678901234567890n));
 console.log(checkVariable());
 console.log(checkVariable(null));
 
-// Problem 2
-
-function generateIDs(count){
-    let id=[];
 
 //PROBLEM_3
 function calculateTotal(...numbers){
