@@ -1,12 +1,12 @@
 
 :root{
 
-    --primary-color: #d15e47;
-    --primary-dark: #082846;
-    --secondary-dark:  #124574;
-    --bg-color: #f6f2ea;
+    --primary-color: #7c28bb;
+    --primary-dark: #0c4a6e;
+    --secondary-dark:  #7dd3fc;
+    --bg-color: #f0f9ff;
     --white: #FFFFFF;
-    --highlight-color: #F4D35E;
+    --highlight-color: #d0edfb;
 
 
 }
@@ -407,6 +407,7 @@ blockquote p::after{
     #product-container{
     display: grid;
     grid-template-columns: 25vw 1fr;
+    grid-template-rows: 1fr;
     grid-template-areas: 
     "a-product main";
     }
