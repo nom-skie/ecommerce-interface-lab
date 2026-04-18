@@ -346,6 +346,23 @@ header nav{
     100%{transform: scale(1);}
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        filter: blur(8px);
+        transform: scale(1.05);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: scale(1);
+    }
+}
+
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
 
 
 /* Responsive Design */
