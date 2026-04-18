@@ -269,6 +269,10 @@ blockquote p::after{
     grid-area: aside;
 }
 
+header nav{
+    gap: 2rem;
+}
+
 /* Signup */
 #signup{
     display: flex;
