@@ -189,10 +189,10 @@ if (cartList) {
 // total amount, and items purchased.
 const currentUser = {
     name: "Mila Jane",
-    orderHistory: [{OID: 1, date: "2006-02-23", total: "₱2,003.46", items: ["adidas | Running Anti-wind Fitting Loose Jacket", "Denim Cap"]},
-                   {OID: 2, date: "2006-03-15", total: "₱12,490", items: ["Apple AirPods Pro 2"]},
-                   {OID: 3, date: "2006-03-26", total: "₱2,495", items: ["BASH Gateway Weekday Backpack"]},
-                   {OID: 4, date: "2006-04-07", total: "₱242", items: ["O.TWO.O Face Waterproof Powder"]}]
+    orderHistory: [{OID: 1, date: "2026-02-23", total: "₱2,003.46", items: ["adidas | Running Anti-wind Fitting Loose Jacket", "Denim Cap"]},
+                   {OID: 2, date: "2026-03-15", total: "₱12,490", items: ["Apple AirPods Pro 2"]},
+                   {OID: 3, date: "2026-03-26", total: "₱2,495", items: ["BASH Gateway Weekday Backpack"]},
+                   {OID: 4, date: "2026-04-07", total: "₱242", items: ["O.TWO.O Face Waterproof Powder"]}]
 }
 
 //Personalize the account page with user data
