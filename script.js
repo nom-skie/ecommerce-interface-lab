@@ -150,6 +150,48 @@ if (cartList) {
     
 }
 
+const currentUser = {
+    name: "Mila Jane",
+    orderHistory: [{OID: 1, date: "2006-02-23", total: "₱2,003.46", items: ["adidas | Running Anti-wind Fitting Loose Jacket", "Denim Cap"]},
+                   {OID: 2, date: "2006-03-15", total: "₱12,490", items: ["Apple AirPods Pro 2"]},
+                   {OID: 3, date: "2006-03-26", total: "₱2,495", items: ["BASH Gateway Weekday Backpack"]},
+                   {OID: 4, date: "2006-04-07", total: "₱242", items: ["O.TWO.O Face Waterproof Powder"]}]
+}
+
+//Personalize the account page with user data
+const header = document.querySelector("#account-header");
+if (header) {
+    header.innerHTML =`
+    <h2>Welcome back, ${currentUser.name}!<h2>
+    <nav>
+        <a href="#">Order History</a>
+        <a href="#">Profile Settings</a>
+        <a href="#">Wishlist</a>
+    </nav>
+    `;
+}
+
+const orderSummary = document.querySelector("summary");
+const details = document.querySelector("details");
+
+if (orderSummary) {
+    orderSummary.addEventListener('click', () => {
+        let allOrder = "<summary>Order History</summary";
+
+        currentUser.orderHistory.forEach(order => {
+            allOrder +=`
+                <p>Date: ${order.date}</p>
+                <p>Total: ${order.total}</p>
+                <p>Items: ${order.items.join(", ")}</p>
+                <p>---------------------------</p>
+            `;
+        })
+                
+        details.innerHTML = allOrder;
+
+    });                    
+
+}
 
 const checkoutForm = document.querySelector(".checkout");
 
