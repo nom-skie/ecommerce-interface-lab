@@ -148,8 +148,12 @@ article:hover{
 
 
 /* empty cart */
-div:empty{
-    background: var(--highlight-color)
+.cart:empty::before{
+    content: "Your cart is empty.";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
 }
 
 
@@ -294,7 +298,7 @@ blockquote p::after{
     }
 }
 
-#atc:hover{
+.atc-btn:hover{
     animation: pulse 0.6s infinite;
 }
 
@@ -326,7 +330,7 @@ blockquote p::after{
     }
 }
 
-#atc{
+.atc-btn{
     animation: bounce 0.5s;
 }
 
