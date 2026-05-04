@@ -1,204 +1,276 @@
-//Define a Product classto present each product in the store
-class Product{
-    constructor(id, name, price, image){
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.image = image;
+// Base URL for the backend API
+const BASE_URL = "http://localhost:8080/api/v1";
+
+/**
+ * Fetches all products from the backend API using async/await.
+ * Replaces the old static products array with live data from the database.
+ * Handles errors manually by checking response.ok since fetch() only rejects
+ * on network failure, not on HTTP error statuses like 404 or 500.
+ */
+async function fetchProducts() {
+  // Select the product container — works for both products.html and landing.html
+  const productContainer =
+    document.querySelector("#main-products") ||
+    document.querySelector(".products");
+
+  // If no product container exists on this page, exit early
+  if (!productContainer) return;
+
+  try {
+    const response = await fetch(`${BASE_URL}/products`);
+
+    // Manually check if the HTTP response status is in the 200-299 range.
+    // fetch() does NOT reject on 404 or 500, so we must check this ourselves.
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("Products not found (404)");
+      } else if (response.status === 500) {
+        throw new Error("Server error (500)");
+      } else {
+        throw new Error(`Http error! Status: ${response.status}`);
+      }
     }
+
+    // Parse the JSON response body into a JavaScript array
+    const products = await response.json();
+
+    // Handle empty state — if no products exist yet, show a message
+    if (products.length === 0) {
+      productContainer.innerHTML = `<p style="text-align:center;">No products available.</p>`;
+      return;
+    }
+
+    // Render the fetched products into the container
+    renderProducts(products, productContainer);
+  } catch (error) {
+    // Log the error to the console for debugging and show a message on the page
+    console.error("Error fetching products: ", error.message);
+    productContainer.innerHTML = `<p style="color:red;">Failed to load products: ${error.message}</p>`;
+  }
 }
 
+/**
+ * Dynamically renders product cards into the given container.
+ * Called by fetchProducts() after a successful API response.
+ *
+ * @param {Array} products - the list of product objects returned by the API
+ * @param {HTMLElement} productContainer - the DOM element to render cards into
+ */
+function renderProducts(products, productContainer) {
+  // Clear any existing content before rendering
+  productContainer.textContent = "";
 
-// Array to store product date like id, name, price, and image. This array is used to dynamically generate the product listings 
-// on the products page. Each product is represented as an instance of the Product class, which constains properties 
-// for the product's ID, name, price, and image URL. This allows for easy management and display of products in the online store.
-const products = [
-    new Product (1, "Apple Airpods Pro 2", 12490.00, "images/Apple AirPods Pro 2.jpg"),
-    new Product (2, "Air Max 270 React", 10295.00, "images/Air Max 270 React.jpg"),
-    new Product (3, "Automatic Umbrella", 139.00, "images/FK101 Automatic Umbrella.png"),
-    new Product (4, "ASUS TUF Gaming A16", 88999.00, "images/laptop.png"),
-    new Product (5, "NIVEA Body Lotion", 172.00, "images/Nivea.jpg"),
-    new Product (6, "DEnim Cap", 133.00, "images/Denim Cap with NEW YORK Embroidered Design.png"),
-    new Product (7, "Trolley Cart Organizer", 224.00, "images/trolly.png"),
-    new Product (8, "26 in 1 Wire Stripper Electrician Hand Tool", 155.00, "images/26 in 1 Wire Stripper Electrician Hand Tool.png"),
-    new Product (9, "BAVIN PC091 20000mAh Power Bank", 336.41, "images/powerbank.png"),
-    new Product (10, "adidas | Running Anti-Wind Fitting Loose Jacket", 1870.46, "images/jacket.png"),
-    new Product (11, "BASH Gateway Weekday Backpack", 2495.00, "images/bag.png"),
-    new Product (12, "O.TWO>O Face Waterproof Powder", 242.00, "images/face powder.png")
-]
+  // Loop through each product and create a card for it
+  products.forEach((product) => {
+    const card = document.createElement("article");
 
-// Select the container where the products will be displayed. The querySelector method is used to select the HTML element with the class "products",
-//  which serves as the container for displaying the product listings on the webpage.
-const productContainer = document.querySelector(".products");
+    // Product image — uses imageUrl from the API response
+    const image = document.createElement("img");
+    image.src = product.imageUrl || "images/placeholder.png";
+    image.alt = product.name;
 
-//This code checks if the productContainer element exists on the page. If it does, it iterates thorough the products array and creates a card for each product.
-if (productContainer) {
-    //The forEach method is used to loop through each product in the products array.
-    products.forEach(product => {
-        //The createElement method is used to create new HTML elements for each product, such as an article for the product card, 
-        // an image for the product image, a heading for the product name, a paragraph for the price, 
-        // and a button for adding the product to the cart.
-        const card = document.createElement('article');
+    //Product name
+    const title = document.createElement("h3");
+    const titleText = document.createTextNode(product.name);
+    title.appendChild(titleText);
 
-        const image = document.createElement('img');
-        image.src = product.image;
-        image.alt = product.name;
+    // Product price with peso sign via CSS .price class
+    const price = document.createElement("p");
+    const priceText = document.createTextNode(product.price.toLocaleString());
+    price.appendChild(priceText);
+    price.classList.add("price");
 
-        const title = document.createElement('h3');
-        const titleText = document.createTextNode(product.name);
-        title.appendChild(titleText);
+    // View Details link
+    const wrapper = document.createElement("p");
+    const details = document.createElement("a");
+    details.href = "detail.html";
+    details.textContent = "View Details";
+    wrapper.appendChild(details);
 
-        const price = document.createElement('p');
-        const priceText = document.createTextNode(product.price.toLocaleString());
-        price.appendChild(priceText);
-        price.classList.add("price");
+    // Add to Cart button
+    // Store product data as data-* attributes so the cart listener
+    // can read them without needing a local products array
+    const btn = document.createElement("button");
+    const btnText = document.createTextNode("Add to Cart");
+    btn.appendChild(btnText);
+    btn.setAttribute("data-id", product.id);
+    btn.setAttribute("data-name", product.name);
+    btn.setAttribute("data-price", product.price);
+    btn.setAttribute(
+      "data-image",
+      product.imageUrl || "images/placeholder.png",
+    );
+    btn.classList.add("atc-btn");
 
-        const wrapper = document.createElement('p');
-        const details = document.createElement('a');
-        details.href = "detail.html";
-        details.textContent = "View Details";
-        wrapper.appendChild(details);
-
-        const btn = document.createElement('button');
-        const btnText = document.createTextNode("Add to Cart");
-        btn.appendChild(btnText);
-        btn.setAttribute('data-id', product.id);
-        btn.classList.add("atc-btn");
-
-        // Append the created elements to the card and then to the product container. The appendChild method is used to add the created elements to the DOM, 
-        // allowing them to be displayed on the webpage. Each product card is constructed with its image, name, price, details link, and add to cart button, 
-        // and then added to the main product container for display.
-        card.appendChild(image);
-        card.appendChild(title);
-        card.appendChild(price);
-        card.appendChild(wrapper);
-        card.appendChild(btn);
-
-        // Append the card to the product container
-        productContainer.appendChild(card);
-
-   });
+    // Append all elements to the card, then the card to the container
+    card.appendChild(image);
+    card.appendChild(title);
+    card.appendChild(price);
+    card.appendChild(wrapper);
+    card.appendChild(btn);
+    productContainer.appendChild(card);
+  });
 }
+
+// Call fetchProducts on page load to populate the product grid dynamically
+fetchProducts();
+
+// ===========================
+// CART
+// ===========================
 
 // Initialize an empty array to represent the shopping cart
 let cart = [];
 
-// Select the cart container and total price element
+// Select the cart container and subtotal display element
 const cartList = document.querySelector(".cart");
-
-// Select the total price element
 const totalPrice = document.querySelector("#Subtotal h3");
 
-// Event listener for adding products to the cart when the "Add to Cart" button is clicked
-document.body.addEventListener('click', (e) => {
-    if (e.target.classList.contains("atc-btn")){
-        // Get the product ID from the button's data attribute and find the corresponding product in the products array
-        const ItemId = parseInt(e.target.getAttribute('data-id'));
-        // The find method is used to search through the products array and return the product object that matches the clicked button's data-id.
-        const product = products.find(product => product.id === ItemId);
+/**
+ * Event listener for the Add to Cart button.
+ * Reads product data from the button's data-* attributes
+ * instead of looking up from a local array.
+ */
+document.body.addEventListener("click", (e) => {
+  if (e.target.classList.contains("atc-btn")) {
+    // Read product info from the button's data attributes
+    const itemId = parseInt(e.target.getAttribute("data-id"));
+    const name = e.target.getAttribute("data-name");
+    const price = parseFloat(e.target.getAttribute("data-price"));
+    const image = e.target.getAttribute("data-image");
 
-        // Check if the product is already in the cart. If it is, incvrement the quantity. If not, add the product to the cart with a quantity of 1.
-        const existingProduct = cart.find(item => item.Id === product.id);
-        if (existingProduct) {
-            existingProduct.quantity++;
-        }else {
-            cart.push({...product, quantity: 1});
-        }
-
-        //Call the renderCart function to update the cart display with the new product and quantity.
-        renderCart();
+    // If the product is already in the cart, increment its quantity
+    // Otherwise, add it as a new item with quantity 1
+    const existingProduct = cart.find((item) => item.id === itemId);
+    if (existingProduct) {
+      existingProduct.quantity++;
+    } else {
+      cart.push({ id: itemId, name, price, image, quantity: 1 });
     }
+
+    // Re-render the cart to reflect the updated state
+    renderCart();
+  }
 });
 
-//This is the renderCart function, which is responsible for updating the shopping cart display on the webpage. It first checks if the cartList element exists, and if it does, it clears its content.
-// Then, it iterates through the cart array and creates list items for each product in the cart, displaying the product image, name, price, and quantity. 
-// Finally, it calculates the total price of the items in the cart and updates the total price display.
+/**
+ * Renders the current cart state into the cart container.
+ * Clears the existing display and rebuilds it from the cart array.
+ * Also recalculates and updates the subtotal.
+ */
 function renderCart() {
+  // Exit early if the cart container doesn't exist on this page
+  if (!cartList) return;
 
-    // Check if the cartList element exists before trying to update it. If it doesn't exist, the function will return early to prevent errors.
-    if (!cartList) return;
+  // Clear the current cart display before re-rendering
+  cartList.textContent = "";
 
-    // Clear the current cart display before rendering the updated cart. 
-    // This ensures that the cart display is refreshed with the latest information each time a product is added or updated.
-    cartList.textContent = "";
+  cart.forEach((product) => {
+    const listItem = document.createElement("li");
 
-    cart.forEach(product => {
-        const listItem = document.createElement('li');
+    const image = document.createElement("img");
+    image.src = product.image;
+    image.alt = product.name;
 
-        const image = document.createElement('img');
-        image.src = product.image;
-        image.alt = product.name;
+    const title = document.createElement("h3");
+    const titleText = document.createTextNode(product.name);
+    title.appendChild(titleText);
 
-        const title = document.createElement('h3');
-        const titleText = document.createTextNode(product.name);
-        title.appendChild(titleText);
+    const price = document.createElement("p");
+    const priceText = document.createTextNode(product.price.toLocaleString());
+    price.appendChild(priceText);
+    price.classList.add("price");
 
-        const price = document.createElement('p');
-        const priceText = document.createTextNode(product.price.toLocaleString());
-        price.appendChild(priceText);
-        price.classList.add("price");
+    // Quantity input — allows the user to update or remove items
+    const quantity = document.createElement("input");
+    quantity.type = "number";
+    quantity.value = product.quantity;
+    quantity.min = 0;
+    quantity.setAttribute("data-id", product.id);
 
-        const quantity = document.createElement('input');
-        quantity.type = "number";
-        quantity.value = product.quantity;
-        quantity.min = 0;
-        quantity.setAttribute('data-id', product.id);
+    // Append children to listItem first, then listItem to cartList
+    listItem.appendChild(image);
+    listItem.appendChild(title);
+    listItem.appendChild(price);
+    listItem.appendChild(quantity);
+    cartList.appendChild(listItem);
+  });
 
+  // Calculate the total price using reduce — multiplies price by quantity for each item
+  const total = cart.reduce(
+    (total, current) => total + current.price * current.quantity,
+    0,
+  );
 
-        cartList.appendChild(listItem);
-        listItem.appendChild(image);
-        listItem.appendChild(title);
-        listItem.appendChild(price);
-        listItem.appendChild(quantity);
-    });
-
-
-    //The reduce works by iterating through each item in the cart and accumulating the total price. For each item, it multiplies the item's price by its quantity and adds that to the total. 
-    // The initial value of total is set to 0, and as the reduce function processes each item in the cart, it updates the total accordingly. Finally, the total price is displayed in the subtotal section of the cart.
-    const total = cart.reduce((total, current) => total + (current.price * current.quantity), 0);
-    if(totalPrice) {
-        totalPrice.textContent = `Subtotal: ₱${total.toLocaleString()}`;
-    }
+  // Update the subtotal display if it exists
+  if (totalPrice) {
+    totalPrice.textContent = `Subtotal: ₱${total.toLocaleString()}`;
+  }
 }
 
-// Event listener for updating product quantity in the cart
+/**
+ * Event listener for quantity input changes in the cart.
+ * Updates the quantity of an item or removes it if set to 0 or below.
+ */
 if (cartList) {
-    // Listen for changes in the quantity input fields and update the cart accordingly. When a change event occurs on an input field of type "number", the event listener retrieves the product ID from the data attribute and the new quantity value. 
-    // If the new quantity is less than or equal to 0, the product is removed from the cart. Otherwise, the quantity of the corresponding product in the cart is updated. 
-    // After making changes to the cart, the render Cart function is called to update the displayed cart items and total price.  
-    cartList.addEventListener('change', (e) => {
-        if(e.target.type === "number") {
-            const productId = parseInt(e.target.getAttribute('data-id'));
-            const newQty = parseInt(e.target.value);
+  cartList.addEventListener("change", (e) => {
+    if (e.target.type === "number") {
+      const productId = parseInt(e.target.getAttribute("data-id"));
+      const newQty = parseInt(e.target.value);
 
-            if(newQty <= 0) {
-                cart = cart.filter(item => item.id !== productId);
-            }else {
-                const product = cart.find(item => item.id === productId);
-                if(product) {
-                    product.quantity = newQty;
-                }
-            }
-            renderCart();
+      // Remove the item from the cart if quantity is 0 or negative
+      if (newQty <= 0) {
+        cart = cart.filter((item) => item.id !== productId);
+      } else {
+        const product = cart.find((item) => item.id === productId);
+        if (product) {
+          product.quantity = newQty;
         }
-    });
-    
+      }
+      renderCart();
+    }
+  });
 }
 
-// Simulated user data for account page. This object contains the user's name and their order history, which includes details such as order ID, date, 
-// total amount, and items purchased.
+// ===========================
+// ACCOUNT
+// ===========================
+
+// Simulated user data for the account page
 const currentUser = {
-    name: "Mila Jane",
-    orderHistory: [{OID: 1, date: "2026-02-23", total: "₱2,003.46", items: ["adidas | Running Anti-wind Fitting Loose Jacket", "Denim Cap"]},
-                   {OID: 2, date: "2026-03-15", total: "₱12,490", items: ["Apple AirPods Pro 2"]},
-                   {OID: 3, date: "2026-03-26", total: "₱2,495", items: ["BASH Gateway Weekday Backpack"]},
-                   {OID: 4, date: "2026-04-07", total: "₱242", items: ["O.TWO.O Face Waterproof Powder"]}]
-}
+  name: "Mila Jane",
+  orderHistory: [
+    {
+      OID: 1,
+      date: "2026-02-23",
+      total: "₱2,003.46",
+      items: ["adidas | Running Anti-wind Fitting Loose Jacket", "Denim Cap"],
+    },
+    {
+      OID: 2,
+      date: "2026-03-15",
+      total: "₱12,490",
+      items: ["Apple AirPods Pro 2"],
+    },
+    {
+      OID: 3,
+      date: "2026-03-26",
+      total: "₱2,495",
+      items: ["BASH Gateway Weekday Backpack"],
+    },
+    {
+      OID: 4,
+      date: "2026-04-07",
+      total: "₱242",
+      items: ["O.TWO.O Face Waterproof Powder"],
+    },
+  ],
+};
 
 //Personalize the account page with user data
 const header = document.querySelector("#account-header");
 if (header) {
-    header.innerHTML =`
+  header.innerHTML = `
     <h2>Welcome back, ${currentUser.name}!<h2>
     <nav>
         <a href="#">Order History</a>
@@ -211,70 +283,73 @@ if (header) {
 const orderSummary = document.querySelector("summary");
 const details = document.querySelector("details");
 
-
 // Event listener for displaying order history in the account page
 if (orderSummary) {
-    orderSummary.addEventListener('click', () => {
-        let allOrder = "<summary>Order History</summary";
+  orderSummary.addEventListener("click", () => {
+    let allOrder = "<summary>Order History</summary";
 
-        currentUser.orderHistory.forEach(order => {
-            allOrder +=`
+    currentUser.orderHistory.forEach((order) => {
+      allOrder += `
                 <p>Date: ${order.date}</p>
                 <p>Total: ${order.total}</p>
                 <p>Items: ${order.items.join(", ")}</p>
                 <p>---------------------------</p>
             `;
-        })
-                
-        details.innerHTML = allOrder;
+    });
 
-    });                    
-
+    details.innerHTML = allOrder;
+  });
 }
+
+// ===========================
+// CHECKOUT
+// ===========================
 
 const checkoutForm = document.querySelector(".checkout");
 
 // Event listener for validating checkout form and redirecting to thank you p[age
 if (checkoutForm) {
-    checkoutForm.addEventListener('click', (e) => {
-        if(e.target.tagName === "BUTTON") {
-            e.preventDefault();
-            const name = document.querySelector("#name");
-            const street = document.querySelector("#street");
-            const zip = document.querySelector("#zip-code");
+  checkoutForm.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") {
+      e.preventDefault();
+      const name = document.querySelector("#name");
+      const street = document.querySelector("#street");
+      const zip = document.querySelector("#zip-code");
 
-            let valid = true;
+      let valid = true;
 
-            const inputs = [name, street, zip];
+      const inputs = [name, street, zip];
 
-            // Validate the checkout form by checking if the required fields are filled. 
-            // The code iterates through the input fields and checks if any of them are empty.
-            inputs.forEach(input => {
-                // Remove any existing error class from the input field and check if the value is empty. If it is, add an error 
-                // class to highlight the field and set a placeholder text indicating that the field is required.
-                input.classList.remove("error");
-                if(input.value.trim() === "") {
-                    input.classList.add("error");
-                    input.placeholder = "This field is required";
-                    valid = false;
-                }
-            });
-
-            if(valid) {
-                window.location.href = "thankyou.html";
-            }
+      // Validate each required field — highlight empty ones with an error class
+      inputs.forEach((input) => {
+        input.classList.remove("error");
+        if (input.value.trim() === "") {
+          input.classList.add("error");
+          input.placeholder = "This field is required";
+          valid = false;
         }
-    });
+      });
+
+      // Redirect to thank you page only if all fields are filled
+      if (valid) {
+        window.location.href = "thankyou.html";
+      }
+    }
+  });
 }
 
-// Event listener for adding fade-in animation when a product is added to the cart
-document.body.addEventListener('click', (e) => {
-    if(e.target.classList.contains("atc-btn")) {
-        const card = e.target.closest('article');
+// ===========================
+// ANIMATIONS
+// ===========================
 
-        card.classList.add("fade-in");
-        setTimeout(() => {
-            card.classList.remove("fade-in");
-        }, 400);
-    }
+// Event listener for adding fade-in animation when a product is added to the cart
+document.body.addEventListener("click", (e) => {
+  if (e.target.classList.contains("atc-btn")) {
+    const card = e.target.closest("article");
+
+    card.classList.add("fade-in");
+    setTimeout(() => {
+      card.classList.remove("fade-in");
+    }, 400);
+  }
 });
